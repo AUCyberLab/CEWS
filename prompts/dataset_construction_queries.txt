@@ -1,0 +1,118 @@
+# =============================================================================
+# CEWS — Dataset Construction Query Templates
+# =============================================================================
+# Purpose : Document the LLM-assisted query templates used during the manual
+#           annotation of the 656 CVE–CAPEC mapping dataset.
+# Paper    : Section 5 — "We construct a new dataset ... through manual
+#           annotation supported by constrained LLM-assisted reasoning."
+# Models   : Gemini 3.1 Pro and ChatGPT 5.2, queried separately for cross-check.
+# Workflow : These queries are NOT used in a fully automated pipeline. They
+#           are interactive prompts used by human annotators to (a) propose
+#           candidate CAPECs for a given CVE, and (b) disambiguate between
+#           closely related CAPECs. Every mapping retained in the final
+#           dataset was manually verified against the CVE description,
+#           prerequisites, consequences, and attack mechanism (cf. the
+#           mapping criteria in Section 5). No mapping was accepted on the
+#           basis of LLM output alone.
+# CWE-grounding:
+#           Following the CWE-grounded design of CEWS (Section 4.1), each
+#           query is augmented with the CVE's associated CWE(s) and the
+#           CWE–CAPEC structural relations when available. This anchors the
+#           LLM's reasoning in repository-supported root-cause information
+#           and prevents recommendations that are structurally inconsistent
+#           with the underlying weakness.
+# =============================================================================
+
+
+### QUERY TEMPLATE 1 — Applicability Check ###
+# Used when an annotator wants to assess whether a specific candidate CAPEC
+# is operationally applicable to a CVE. If the candidate is rejected, the
+# LLM is asked to propose alternative CAPECs together with reasoning.
+
+Given the following CVE, its associated CWE(s), and a candidate CAPEC,
+determine whether the CAPEC can be applied to the CVE.
+
+CVE Description:
+{cve_description}
+
+Associated CWE(s):
+  - ID:   {cwe_id}
+  - Name: {cwe_name}
+  - CWE–CAPEC structural relations (if available): {cwe_capec_relations}
+
+Candidate CAPEC:
+  - ID:   {capec_id}
+  - Name: {capec_name}
+
+Please analyze the applicability from multiple dimensions, including:
+  - Structural support from CWE–CAPEC relations
+  - Prerequisites / preconditions
+  - Exploitation mechanism
+  - Likely consequences / impact
+
+If the candidate CAPEC is NOT applicable, please recommend several CAPECs
+that you consider the most applicable based on a holistic view of the CWE
+structural relations, prerequisites, consequences, and mechanism. Provide
+reasoning for each recommendation, and clearly indicate whether each
+recommendation is supported by the CWE–CAPEC structural relations.
+
+
+### QUERY TEMPLATE 2 — Pairwise Disambiguation ###
+# Used when two semantically close CAPECs are plausible candidates for the
+# same CVE, and the annotator needs to decide which one is more specific or
+# more operationally appropriate.
+
+Given the following CVE, its associated CWE(s), and two candidate CAPECs,
+determine which CAPEC is more applicable to the CVE.
+
+CVE Description:
+{cve_description}
+
+Associated CWE(s):
+  - ID:   {cwe_id}
+  - Name: {cwe_name}
+  - CWE–CAPEC structural relations (if available): {cwe_capec_relations}
+
+Candidate CAPEC A:
+  - ID:   {capec_id_a}
+  - Name: {capec_name_a}
+
+Candidate CAPEC B:
+  - ID:   {capec_id_b}
+  - Name: {capec_name_b}
+
+Please compare the two candidates along the following dimensions:
+  - Structural support from CWE–CAPEC relations (which candidate, if any, is
+    directly linked to the CVE's CWE; if both are linked, which one is at a
+    more specific abstraction level)
+  - Prerequisites / preconditions
+  - Exploitation mechanism
+  - Likely consequences / impact
+
+State which candidate is more applicable and explain why the other is less
+suitable. If neither candidate is applicable, please recommend several
+CAPECs that you consider the most applicable based on a holistic view of
+the CWE structural relations, prerequisites, consequences, and mechanism,
+and provide reasoning for each recommendation.
+
+
+# =============================================================================
+# Notes on Annotation Protocol
+# -----------------------------------------------------------------------------
+# 1. For each CVE, an initial candidate pool was formed from CWE–CAPEC
+#    structural relations when a CWE assignment was available. The CWE
+#    information was carried into the LLM queries above so that the LLM's
+#    reasoning is anchored to the repository-supported root cause rather
+#    than to surface text alone.
+# 2. Both Gemini 3.1 Pro and ChatGPT 5.2 were queried independently using
+#    the templates above. Where the two models agreed, the candidate was
+#    forwarded to manual verification; where they disagreed, the competing
+#    candidates were evaluated manually side by side.
+# 3. A mapping was retained only if it satisfied the three criteria in
+#    Section 5: structural compatibility with CWE–CAPEC (when applicable),
+#    semantic consistency with the CVE description, and specificity (the
+#    most specific pattern sufficiently supported by the evidence).
+# 4. A high-confidence subset of 177 mappings over 156 CVEs was
+#    independently re-annotated by two cybersecurity experts; disagreements
+#    were resolved via adjudication and underspecified cases were excluded.
+# =============================================================================
