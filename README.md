@@ -36,7 +36,7 @@ CEWS (Constrained Evidence-Weighted Scoring) is an auditable framework that link
 ### Requirements
 
 - Python `>= 3.10`
-- CUDA-capable GPU (recommended for fine-tuning and large-scale inference)
+- CUDA-capable GPU
 - Key dependencies: `transformers`, `peft`, `bitsandbytes`, `accelerate`, `torch`, `scikit-learn`, `pandas`
 
 ### Setup
