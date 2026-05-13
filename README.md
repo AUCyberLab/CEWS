@@ -45,7 +45,6 @@ CEWS (Constrained Evidence-Weighted Scoring) is an auditable framework that link
 git clone https://github.com/AUCyberLab/CEWS.git
 cd CEWS
 
-# (optional) create a clean environment
 conda create -n cews python=3.10 -y
 conda activate cews
 
@@ -53,8 +52,6 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-
-<!-- TODO: replace with your actual entry points -->
 
 Training a semantic scorer:
 Each of the four semantic dimensions (mechanism, prerequisite, description, impact) is fine-tuned independently as a LoRA adapter on top of a 4-bit NF4-quantized DeepSeek-distilled LLaMA-3.1-8B base model.
@@ -77,9 +74,9 @@ Batch inference loads the fine-tuned LoRA adapter on top of the base model and p
 Example inference command (description scorer):
 
 ```bash
-python scripts/Description/Pre_notemp.py \
-    --input_excel  data/New_test_metrics/Processed_Data/<test_set>.xlsx \
-    --output_excel data/New_test_metrics/output/Description_predictions.xlsx \
+python Scripts/Description/Predict.py \
+    --input_excel  data/Test_dataset/Processed_Data/<test_set>.xlsx \
+    --output_excel data/Test_dataset/output/Description_predictions.xlsx \
     --base_model   ./base_model \
     --lora_weights output/cve_des_finetune/final_adapter \
     --batch_size 16
